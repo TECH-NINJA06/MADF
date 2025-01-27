@@ -1,15 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Structure to represent an item
-typedef struct {
+struct Item {
     int index;
     float profit;
     float weight;
     float ratio;
-} Item;
+};
 
-// Function to compare items based on profit/weight ratio
 int compareItems(const void *a, const void *b) {
     Item *itemA = (Item *)a;
     Item *itemB = (Item *)b;
@@ -19,39 +17,32 @@ int compareItems(const void *a, const void *b) {
 }
 
 void greedyKnapsack(int n, float m, Item items[]) {
-    float solution[n];  // Solution vector
-    float totalProfit = 0.0;  // Total profit
+    float solution[n];
+    float totalProfit = 0.0; 
     float remainingCapacity = m;
     
-    // Initialize solution vector
     for (int i = 0; i < n; i++) {
         solution[i] = 0.0;
     }
-
-    // Sort items by profit/weight ratio
     qsort(items, n, sizeof(Item), compareItems);
 
-    // Greedy selection of items
     for (int i = 0; i < n; i++) {
         if (items[i].weight > remainingCapacity) {
-            break;  // If the item can't fit, stop
+            break; 
         }
-        solution[items[i].index] = 1.0;  // Include the item fully
+        solution[items[i].index] = 1.0; 
         remainingCapacity -= items[i].weight;
         totalProfit += items[i].profit;
     }
 
-    // If there is some remaining capacity, include a fraction of the next item
     for (int i = 0; i < n; i++) {
         if (solution[items[i].index] == 0.0 && remainingCapacity > 0) {
             float fraction = remainingCapacity / items[i].weight;
             solution[items[i].index] = fraction;
             totalProfit += items[i].profit * fraction;
-            remainingCapacity = 0;  // Knapsack is full
+            remainingCapacity = 0; 
         }
     }
-
-    // Print solution
     printf("Selected items (fractions):\n");
     for (int i = 0; i < n; i++) {
         printf("Item %d: %.2f\n", i + 1, solution[i]);
