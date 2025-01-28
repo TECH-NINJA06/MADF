@@ -9,14 +9,14 @@ struct Item {
 };
 
 int compareItems(const void *a, const void *b) {
-    Item *itemA = (Item *)a;
-    Item *itemB = (Item *)b;
+    struct Item *itemA = (struct Item *)a;
+    struct Item *itemB = (struct Item *)b;
     if (itemA->ratio < itemB->ratio) return 1;
     if (itemA->ratio > itemB->ratio) return -1;
     return 0;
 }
 
-void greedyKnapsack(int n, float m, Item items[]) {
+void greedyKnapsack(int n, float m,struct Item items[]) {
     float solution[n];
     float totalProfit = 0.0; 
     float remainingCapacity = m;
@@ -24,7 +24,7 @@ void greedyKnapsack(int n, float m, Item items[]) {
     for (int i = 0; i < n; i++) {
         solution[i] = 0.0;
     }
-    qsort(items, n, sizeof(Item), compareItems);
+    qsort(items, n, sizeof(struct Item), compareItems);
 
     for (int i = 0; i < n; i++) {
         if (items[i].weight > remainingCapacity) {
@@ -60,7 +60,7 @@ int main() {
     printf("Enter the capacity of the knapsack: ");
     scanf("%f", &m);
 
-    Item items[n];
+    struct Item items[n];
     printf("Enter the profit and weight of each item:\n");
     for (int i = 0; i < n; i++) {
         items[i].index = i;
