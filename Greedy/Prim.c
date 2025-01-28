@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <limits.h>
-
 #define INF INT_MAX
 
 void prim(int n, int cost[n][n]) {
@@ -71,7 +70,7 @@ void prim(int n, int cost[n][n]) {
 
     printf("Edges in the Minimum Spanning Tree:\n");
     for (int i = 0; i < n - 1; i++) {
-        printf("(%d, %d)\n", t[i][0] + 1, t[i][1] + 1); // +1 to convert to 1-based indexing
+        printf("(%d, %d)\n", t[i][0] + 1, t[i][1] + 1);
     }
     printf("Total cost of the Minimum Spanning Tree: %d\n", mincost);
 }
@@ -83,10 +82,13 @@ int main() {
     scanf("%d", &n);
 
     int cost[n][n];
-    printf("Enter the adjacency matrix (use %d for infinity):\n", INF);
+    printf("Enter the adjacency matrix (use -1 for infinity):\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             scanf("%d", &cost[i][j]);
+            if (cost[i][j] == -1) {
+                cost[i][j] = INF;
+            }
         }
     }
 
