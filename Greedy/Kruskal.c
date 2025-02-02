@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define INF 2147483647
+#define INF INT_MAX
 
 typedef struct {
     int u, v, weight;
