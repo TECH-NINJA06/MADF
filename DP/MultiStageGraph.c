@@ -34,7 +34,7 @@ void FGraph(int n, int k) {
 
 void BGraph(int n, int k) {
     cost[1] = 0.0;
-    for (int j = 2; j <= k; j++) {
+    for (int j = 2; j <= n; j++) {
         int r = -1;
         double minCost = INT_MAX;
         for (int i = j - 1; i >= 1; i--) {
@@ -44,11 +44,23 @@ void BGraph(int n, int k) {
             }
         }
         cost[j] = minCost;
-        p[j] = r;
+        d[j] = r;
     }
+    
+    p[1] = 1;
     p[k] = n;
-    for (int j = k - 1; j >= 1; j--) {
-        p[j] = d[p[j + 1]];
+    for (int j = 2; j < k; j++) {
+        int current = p[j-1];
+        double minCost = INT_MAX;
+        int bestNext = -1;
+        
+        for (int i = current + 1; i <= n; i++) {
+            if (c[current][i] > 0 && c[current][i] + cost[i] < minCost) {
+                minCost = c[current][i] + cost[i];
+                bestNext = i;
+            }
+        }
+        p[j] = bestNext;
     }
 }
 
@@ -68,13 +80,24 @@ int main() {
     c[4][6] = 2; c[5][6] = 3;
     
     FGraph(n, k);
+    printf("\nForward Graph Results:\n");
+    printf("Stage\tVertex\tPrev\tCost\n");
+    for (int i = 1; i <= k; i++) {
+        printf("%d\t%d\t%d\t%.1f\n", i, p[i], i > 1 ? d[p[i-1]] : 1, cost[p[i]]);
+    }
+    
     BGraph(n, k);
-    printf("Minimum-cost path: ");
+    printf("\nBackward Graph Results:\n");
+    printf("Stage\tVertex\tPrev\tCost\n");
+    for (int i = 1; i <= k; i++) {
+        printf("%d\t%d\t%d\t%.1f\n", i, p[i], i > 1 ? p[i-1] : 1, cost[p[i]]);
+    }
+    
+    printf("\nMinimum-cost path: ");
     for (int i = 1; i <= k; i++) {
         printf("%d ", p[i]);
     }
     printf("\n");
-    
     
     return 0;
 }
