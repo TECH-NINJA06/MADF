@@ -1,103 +1,122 @@
 #include <stdio.h>
-#include <limits.h>
 
-#define MAX_N 100 
+#define INF 1e9
+#define MAX_VERTICES 100   
 
-int n, k;
-double cost[MAX_N];
-int d[MAX_N], p[MAX_N];
-double c[MAX_N][MAX_N];
+int numVertices, numStages;
+double costMatrix[MAX_VERTICES][MAX_VERTICES], minCost[MAX_VERTICES];
+int nextVertex[MAX_VERTICES], prevVertex[MAX_VERTICES], path[MAX_VERTICES];
+int stage[MAX_VERTICES];
 
-void FGraph(int n, int k) {
-    cost[n] = 0.0; 
-    for (int j = n - 1; j >= 1; j--) {
-        int r = -1;
-        double minCost = INT_MAX;
-        
-        for (int i = j + 1; i <= n; i++) {
-            if (c[j][i] > 0 && c[j][i] + cost[i] < minCost) {
-                minCost = c[j][i] + cost[i];
-                r = i;
+struct Edge {
+    int start, end, weight;
+};
+
+struct Edge edges[] = {
+    {1,2,13},{1,3,11},{1,4,12},{1,5,10},
+    {2,6,7},{2,7,8},{2,8,6},  {3,6,7},{3,8,6},{3,9,8},  {4,6,8},{4,7,6},{4,9,7},  {5,6,6},{5,7,8},{5,8,7},
+    {6,10,11},{6,11,12},{6,13,13},  {7,10,13},{7,11,11},{7,12,12},  {8,11,12},{8,12,11},{8,13,13},  {9,10,13},{9,12,12},{9,13,11},
+    {10,14,10},{11,14,12},{12,14,13},{13,14,11}
+};
+
+
+void setStages() {
+    for(int i = 1; i <= numVertices; i++) {
+        stage[i] = INF;
+    }
+    stage[1] = 1;
+    for(int i = 2; i <= numVertices; i++) {
+        for(int j = 1; j <= i; j++) {
+            if(stage[j] < stage[i]) {
+                for(int k = 0; k < 32; k++) {
+                    if(edges[k].start == j && edges[k].end == i) {
+                        stage[i] = stage[j] + 1;
+                        break;
+                    }
+                }
             }
         }
-        
-        cost[j] = minCost;
-        d[j] = r;
-    }
-    
-    p[1] = 1;
-    p[k] = n;
-    for (int j = 2; j <= k - 1; j++) {
-        p[j] = d[p[j - 1]];
     }
 }
 
-void BGraph(int n, int k) {
-    cost[1] = 0.0;
-    for (int j = 2; j <= n; j++) {
-        int r = -1;
-        double minCost = INT_MAX;
-        for (int i = j - 1; i >= 1; i--) {
-            if (c[i][j] > 0 && cost[i] + c[i][j] < minCost) {
-                minCost = cost[i] + c[i][j];
-                r = i;
-            }
-        }
-        cost[j] = minCost;
-        d[j] = r;
-    }
+void FGraph() {
+    setStages();
+    minCost[numVertices] = 0.0;
+    printf("cost[%d, %d] = %.2f\n",stage[numVertices], numVertices, minCost[numVertices]);
     
-    p[1] = 1;
-    p[k] = n;
-    for (int j = 2; j < k; j++) {
-        int current = p[j-1];
-        double minCost = INT_MAX;
-        int bestNext = -1;
-        
-        for (int i = current + 1; i <= n; i++) {
-            if (c[current][i] > 0 && c[current][i] + cost[i] < minCost) {
-                minCost = c[current][i] + cost[i];
-                bestNext = i;
+    for (int j = numVertices - 1; j >= 1; j--) {
+        minCost[j] = INF;
+        for (int r = j + 1; r <= numVertices; r++) {
+            double totalCost = costMatrix[j][r] + minCost[r];
+            if (costMatrix[j][r] < INF && totalCost < minCost[j]) {
+                minCost[j] = totalCost;
+                nextVertex[j] = r;
             }
         }
-        p[j] = bestNext;
+        if (minCost[j] < INF) {
+            printf("cost[%d, %d] = %.2f  d(%d) = %2d\n",stage[j], j, minCost[j],j,nextVertex[j]);
+        }
     }
+
+    path[1] = 1;
+    path[numStages] = numVertices;
+    for (int j = 2; j < numStages; j++) {
+        path[j] = nextVertex[path[j - 1]];
+    }
+}
+
+void BGraph() {
+    minCost[1] = 0.0;
+    printf("cost[%d, %d] = %.2f\n",1, 1, minCost[1]);
+    
+    for (int j = 2; j <= numVertices; j++) {
+        minCost[j] = INF;
+        for (int r = 1; r < j; r++) {
+            double totalCost = costMatrix[r][j] + minCost[r];
+            if (costMatrix[r][j] < INF && totalCost < minCost[j]) {
+                minCost[j] = totalCost;
+                prevVertex[j] = r;
+            }
+        }
+        if (minCost[j] < INF) {
+            printf("cost[%d, %d] = %.2f  d(%d) = %2d\n", stage[j], j, minCost[j], j, nextVertex[j]);
+        }
+    }
+
+    path[1] = 1;  
+    path[numStages] = numVertices;
+    
+    int current = numVertices;
+    for (int i = numStages; i > 1; i--) {
+        current = prevVertex[current];
+        path[i-1] = current;
+    }
+}
+
+void displayPath() {
+    printf("Shortest Path: ");
+    for (int i = 1; i <= numStages; i++) {
+        printf("%d ", path[i]);
+    }
+    printf("\n");
 }
 
 int main() {
-    n = 6; 
-    k = 4;
+    numVertices = 14;
+    numStages = 5;
     
-    for (int i = 0; i < MAX_N; i++) {
-        for (int j = 0; j < MAX_N; j++) {
-            c[i][j] = 0;
+    for (int i = 1; i <= numVertices; i++) {
+        for (int j = 1; j <= numVertices; j++) {
+            costMatrix[i][j] = INF;
         }
     }
     
-    c[1][2] = 1; c[1][3] = 2;
-    c[2][4] = 4; c[2][5] = 1;
-    c[3][4] = 3; c[3][5] = 2;
-    c[4][6] = 2; c[5][6] = 3;
-    
-    FGraph(n, k);
-    printf("\nForward Graph Results:\n");
-    printf("Stage\tVertex\tPrev\tCost\n");
-    for (int i = 1; i <= k; i++) {
-        printf("%d\t%d\t%d\t%.1f\n", i, p[i], i > 1 ? d[p[i-1]] : 1, cost[p[i]]);
+    for(int i = 0; i < 32; i++) {
+        costMatrix[edges[i].start][edges[i].end] = edges[i].weight;
     }
     
-    BGraph(n, k);
-    printf("\nBackward Graph Results:\n");
-    printf("Stage\tVertex\tPrev\tCost\n");
-    for (int i = 1; i <= k; i++) {
-        printf("%d\t%d\t%d\t%.1f\n", i, p[i], i > 1 ? p[i-1] : 1, cost[p[i]]);
-    }
-    
-    printf("\nMinimum-cost path: ");
-    for (int i = 1; i <= k; i++) {
-        printf("%d ", p[i]);
-    }
-    printf("\n");
+    FGraph();
+    displayPath();
     
     return 0;
 }
