@@ -4,7 +4,7 @@
 #define MAX_VERTICES 100   
 
 int numVertices, numStages;
-double costMatrix[MAX_VERTICES][MAX_VERTICES], minCost[MAX_VERTICES];
+double cost[MAX_VERTICES][MAX_VERTICES], minCost[MAX_VERTICES];
 int nextVertex[MAX_VERTICES], prevVertex[MAX_VERTICES], path[MAX_VERTICES];
 int stage[MAX_VERTICES];
 
@@ -47,8 +47,8 @@ void FGraph() {
     for (int j = numVertices - 1; j >= 1; j--) {
         minCost[j] = INF;
         for (int r = j + 1; r <= numVertices; r++) {
-            double totalCost = costMatrix[j][r] + minCost[r];
-            if (costMatrix[j][r] < INF && totalCost < minCost[j]) {
+            double totalCost = cost[j][r] + minCost[r];
+            if (cost[j][r] < INF && totalCost < minCost[j]) {
                 minCost[j] = totalCost;
                 nextVertex[j] = r;
             }
@@ -72,8 +72,8 @@ void BGraph() {
     for (int j = 2; j <= numVertices; j++) {
         minCost[j] = INF;
         for (int r = 1; r < j; r++) {
-            double totalCost = costMatrix[r][j] + minCost[r];
-            if (costMatrix[r][j] < INF && totalCost < minCost[j]) {
+            double totalCost = cost[r][j] + minCost[r];
+            if (cost[r][j] < INF && totalCost < minCost[j]) {
                 minCost[j] = totalCost;
                 prevVertex[j] = r;
             }
@@ -107,12 +107,12 @@ int main() {
     
     for (int i = 1; i <= numVertices; i++) {
         for (int j = 1; j <= numVertices; j++) {
-            costMatrix[i][j] = INF;
+            cost[i][j] = INF;
         }
     }
     
     for(int i = 0; i < 32; i++) {
-        costMatrix[edges[i].start][edges[i].end] = edges[i].weight;
+        cost[edges[i].start][edges[i].end] = edges[i].weight;
     }
     
     FGraph();
