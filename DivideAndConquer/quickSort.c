@@ -1,58 +1,74 @@
 #include <stdio.h>
-struct Student{
-    int roll,age;
-    char name[20];
-};
-void interchange(struct Student *a, struct Student *b){
-    struct Student temp = *a;
+#define MAX 100
+
+void quickSort(int arr[], int low, int up);
+int partition(int arr[], int low, int up);
+void swap(int *a, int *b);
+void display(int arr[], int size, int pivotIndex);
+
+int n, k = 1;
+
+int main() {
+    int i, arr[MAX];
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+    for (i = 0; i < n; i++) {
+        printf("Enter element %d: ", i + 1);
+        scanf("%d", &arr[i]);
+    }
+    printf("\nInitial array: ");
+    display(arr, n, -1); 
+    quickSort(arr, 0, n - 1);
+    printf("\nThe sorted array in descending order is:\n");
+    display(arr, n, -1); 
+    return 0;
+}
+
+void quickSort(int arr[], int low, int up) {
+    if (low < up) {
+        int pi = partition(arr, low, up);
+        printf("\nPass %d: Pivot = %d\n", k++, arr[pi]);
+        display(arr, n, pi);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, up);
+    }
+}
+
+int partition(int arr[], int low, int up) {
+    int pivot = arr[low];
+    int i = low;
+    int j = up;
+    while (i < j) {
+        while (arr[i] >= pivot && i < up) {
+            i++;
+        }
+        while (arr[j] < pivot) {
+            j--;
+        }
+        if (i < j) {
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[low], &arr[j]);
+    return j;
+}
+
+void swap(int *a, int *b) {
+    int temp = *a;
     *a = *b;
     *b = temp;
 }
-int partition(struct Student a[], int m, int p){
-    int v = a[m].age;
-    int i = m + 1;
-    int j = p - 1;
 
+void display(int arr[], int size, int pivotIndex) {
     printf("[ ");
-    for(int k = i; k < j; k++)
-        printf("%d ", a[k].age);
-    printf("]  \n");
-    // printf("i=%d j=%d\n",i,j);   
-    while (i <= j){
-        while (i <= j && a[i].age <= v)
-            i = i + 1;
-        while (i <= j && a[j].age >= v)
-            j = j - 1;
-        if (i < j)
-            interchange(&a[i], &a[j]);
-        // printf("[ ");
-        // for(int k = 0; k < 9; k++)
-        //     printf("%d ", a[k].age);
-        // printf("]  ");
-        // printf("i=%d j=%d\n",i,j);    
+    for (int i = 0; i < pivotIndex; i++) {
+        printf("%d ", arr[i]);
     }
-    interchange(&a[m], &a[j]);
-    printf("[ ");
-    for(int k = 0; k < 9; k++)
-        printf("%d ", a[k].age);
-    printf("]  ");
-    printf("j=%d\n",j);    
-    return j;
-}
-void quickSort(struct Student a[], int p, int q){
-    if (p < q) {
-        int j = partition(a, p, q + 1);
-        quickSort(a, p, j - 1);
-        quickSort(a, j + 1, q);
+    if (pivotIndex != -1) {
+        printf("] %d [ ", arr[pivotIndex]);  
     }
-}
-
-int main(){
-    struct Student a[] = {{1, 19, "A"}, {2, 18, "B"}, {3, 20, "C"}, {4, 17, "D"}, {5, 21, "E"}, {6, 16, "F"}, {7, 22, "G"}, {8, 15, "H"}, {9, 23, "I"}};
-    quickSort(a, 0, 9);
-    for (int i = 0; i < 9; i++)
-    {
-        printf("%d %d %s\n", a[i].roll, a[i].age, a[i].name);
+    for (int i = pivotIndex + 1; i < size; i++) {
+        printf("%d ", arr[i]);
     }
-    return 0;
+    printf("]\n");
 }
