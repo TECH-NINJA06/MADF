@@ -16,6 +16,7 @@ void printMatrix(int k) {
             else
                 printf("%3d ", A[i][j]);
         }
+        
         printf("\n");
     }
     
