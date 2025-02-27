@@ -7,6 +7,7 @@ int n = 5;
 int A[MAX_N][MAX_N], cost[MAX_N][MAX_N];
 int path[MAX_N][MAX_N]; 
 
+
 void printMatrix(int k) {
     printf("\nA^%d\n", k+1);
     for (int i = 0; i < n; i++) {
