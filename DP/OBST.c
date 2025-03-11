@@ -41,21 +41,21 @@ void OBST(int p[], int q[], int n) {
     }
 
     for (int k = 0; k <= n; k++) { 
-        printf("\nFor j - i = %d:\n", d);
-        for (int i = 0; i <= n - d; i++) {
-            int j = i + d;
+        printf("\nFor j - i = %d:\n", k);
+        for (int i = 0; i <= n - k; i++) {
+            int j = i + k;
             printf("w[%d][%d]=%d ", i, j, w[i][j]);
         }
         printf("\n");
 
-        for (int i = 0; i <= n - d; i++) {
-            int j = i + d;
+        for (int i = 0; i <= n - k; i++) {
+            int j = i + k;
             printf("c[%d][%d]=%d ", i, j, c[i][j]);
         }
         printf("\n");
 
-        for (int i = 0; i <= n - d; i++) {
-            int j = i + d;
+        for (int i = 0; i <= n - k; i++) {
+            int j = i + k;
             printf("r[%d][%d]=%d ", i, j, r[i][j]);
         }
         printf("\n");
