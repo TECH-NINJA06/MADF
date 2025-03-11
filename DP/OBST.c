@@ -1,75 +1,75 @@
-#include <stdio.h>
-#include <limits.h>
+# include<stdio.h>
+#define MAX 100
+int w[MAX][MAX];
+int c[MAX][MAX];
+int r[MAX][MAX];  
 
-#define N 5
 
-void optimalBST(int keys[], int freq[], int n) {
-    int cost[n+1][n+1];
-    for(int i = 0; i <= n; i++) {
-        cost[i][i] = 0;
-    }
-    int root[n+1][n+1];
-    for(int i = 0; i <= n; i++) {
-        root[i][i] = 0;
-    }
-
-    int sum[n+1][n+1];
-    for(int i = 0; i <= n; i++) {
-        sum[i][i] = 0;
-    }
-
-    for (int i = 0; i < n; i++) {
-        sum[i][i] = freq[i];
-        for (int j = i + 1; j < n; j++) {
-            sum[i][j] = sum[i][j - 1] + freq[j];
+int Find(int c[MAX][MAX],int r[MAX][MAX],int i,int j){
+    int l;
+    int min=9999;
+    for (int m = r[i][j-1]; m <=r[i+1][j]; m++) {
+        if(c[i][m-1]+c[m][j]<min){
+            min=c[i][m-1]+c[m][j];
+            l=m;
         }
     }
-
-    for (int length = 1; length <= n; length++) {
-        for (int i = 0; i <= n - length; i++) {
-            int j = i + length - 1;
-            cost[i][j] = INT_MAX;
-            
-            for (int r = i; r <= j; r++) {
-                int c = ((r > i) ? cost[i][r - 1] : 0) +
-                        ((r < j) ? cost[r + 1][j] : 0) +
-                        sum[i][j];
-                
-                if (c < cost[i][j]) {
-                    cost[i][j] = c;
-                    root[i][j] = r;
-                }
-            }
-        }
-    }
-
-    printf("Cost Table:\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (j >= i)
-                printf("%4d ", cost[i][j]);
-            else
-                printf("     ");
-        }
-        printf("\n");
-    }
-
-    printf("\nRoot Table:\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (j >= i)
-                printf("%4d ", root[i][j]);
-            else
-                printf("     ");
-        }
-        printf("\n");
-    }
+    return l;
 }
 
-int main() {
-    int keys[N] = {10, 20, 30, 40, 50};
-    int freq[N] = {3, 5, 8, 4, 10};
+void OBST(int p[],int q[],int n){
+    for (int i = 0; i <= n-1; i++) {   
+        w[i][i]=q[i];
+        c[i][i]=0;
+        r[i][i]=0;
+        w[i][i+1]=q[i]+q[i+1]+p[i+1];
+        r[i][i+1]=i+1;
+        c[i][i+1]=q[i]+q[i+1]+p[i+1];
+    }
+    w[n][n]=q[n]; r[n][n]=0;c[n][n]=0;
 
-    optimalBST(keys, freq, N);
+    for (int i = 0; i <=n; i++) {
+        printf("w[%d][%d]=%d ",i,i,w[i][i]);
+    }
+    printf("\n");
+    for (int i = 0; i <=n; i++) {
+        printf("c[%d][%d]=%d ",i,i,c[i][i]);
+    }
+    printf("\n");
+    for (int i = 0; i <=n; i++) {
+        printf("r[%d][%d]=%d ",i,i,r[i][i]);
+    }
+    printf("\n");
+
+
+    for (int m = 2; m <=n; m++) {
+        for (int i = 0; i <= n-m; i++) {
+            int j=i+m;
+            w[i][j]=w[i][j-1]+p[j]+q[j];
+            int k=Find(c,r,i,j);
+            c[i][j]=w[i][j]+c[i][k-1]+c[k][j];
+            r[i][j]=k;
+        }
+    }
+    printf("w[%d][%d]=%d\n",0,n,w[0][n]);
+    printf("c[%d][%d]=%d\n",0,n,c[0][n]);
+    printf("r[%d][%d]=%d\n",0,n,r[0][n]);
+}
+
+int main(){
+    int n;
+    printf("Enter the number of keys\n");
+    scanf("%d",&n);
+    int p[n+1],q[n+1];
+    printf("Enter the probability of successful search\n");
+    for (int i = 1; i <= n; i++) {
+        scanf("%d",&p[i]);
+    }
+    printf("Enter the probability of unsuccessful search\n");
+    for (int i = 0; i <= n; i++) {
+        scanf("%d",&q[i]);
+    }
+    OBST(p,q,n);
+
     return 0;
 }
