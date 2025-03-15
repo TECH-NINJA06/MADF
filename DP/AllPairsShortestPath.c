@@ -35,18 +35,17 @@ void printMatrix(int k) {
 
 void printPath(int i, int j) {
     if (i == j) {
-        printf("%d", i + 1);  
+        printf("%d", i + 1);
         return;
     }
     if (path[i][j] == -1) {
+        printf(" No path ");
         return;
     }
-    // if (path[i][j] == i) {
-    //     return;
-    // }
-    printf("%d -> ", i + 1);  
-    printPath(path[i][j], j); 
+    printPath(i, path[i][j]);
+    printf(" -> %d", j + 1);
 }
+
 
 void AllPaths(int n) {
     for (int i = 0; i < n; i++) {
@@ -93,15 +92,15 @@ int main() {
 
     AllPaths(n);
     printf("Source\tDestination\tLength\tPath\n");
-    // for (int i = 0; i < n; i++) {
-    //     for (int j = 0; j < n; j++) {
-    //         if (i != j && A[i][j] != INT_MAX) {
-    //             printf("Path from %d to %d: ", i, j);
-    //             printPath(i, j);
-    //             printf(" (Cost: %.0f)\n", A[i][j]);
-    //         }
-    //     }
-    // }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i != j && A[i][j] != INT_MAX) {
+                printf("Path from %d to %d: ", i, j);
+                printPath(i, j);
+                printf(" (Cost: %.0f)\n", A[i][j]);
+            }
+        }
+    }
 
     printf("\n");
 
