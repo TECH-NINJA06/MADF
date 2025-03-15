@@ -95,7 +95,7 @@ int main() {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (i != j && A[i][j] != INT_MAX) {
-                printf("%d\t    %d\t", i, j);
+                printf("%d\t    %d\t", i+1, j+1);
                 printf("\t%d\t", A[i][j]);
                 printPath(i, j);
                 printf("\n");
