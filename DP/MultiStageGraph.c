@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 #define INF 1e9
 #define MAX_VERTICES 100   
@@ -104,6 +105,8 @@ void displayPath() {
 int main() {
     numVertices = 14;
     numStages = 5;
+    clock_t start, end; 
+    double time_taken;
     
     for (int i = 1; i <= numVertices; i++) {
         for (int j = 1; j <= numVertices; j++) {
@@ -114,9 +117,18 @@ int main() {
     for(int i = 0; i < 32; i++) {
         cost[edges[i].start][edges[i].end] = edges[i].weight;
     }
-    
+
+    printf("Forward Graph\n");   
     FGraph();
     displayPath();
+
+    printf("\nBackward Graph\n");
+    start = clock();
+    BGraph();
+    end = clock();
+    time_taken = (((double)(end - start))/CLOCKS_PER_SEC)*1000;
+    displayPath();
+    printf("\nExecution Time: %.6f ms\n", time_taken); 
     
     return 0;
 }
