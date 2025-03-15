@@ -17,22 +17,24 @@ void printMatrix(int V, int matrix[V][V]) {
 }
 
 void printDistanceTable(int V, int dist[V], int iteration) {
-    printf("\nDistance Matrix after iteration %d:\n", iteration);
+    printf("\ndist[%d]  ", iteration);
+
     for (int i = 0; i < V; i++) {
         if (dist[i] == INF)
-            printf("INF\t");
+            printf("INF   ");
         else
-            printf("%d\t", dist[i]);
+            printf("%-5d ", dist[i]);
     }
-    printf("\n");
+    // printf("\n");
 }
 
+
 void printShortestPaths(int V, int src, int dist[V], int parent[V]) {
-    printf("\nShortest Paths Table:\n");
+    printf("\n\nShortest Paths Table:\n");
     printf("Src\tDest\tLength\tPath\n");
     for (int i = 0; i < V; i++) {
         if (i != src) {
-            printf("%d\t%d\t", src, i);
+            printf("%d\t%d\t", src+1, i+1);
             if (dist[i] == INF) {
                 printf("INF\t-\n");
             } else {
@@ -43,7 +45,7 @@ void printShortestPaths(int V, int src, int dist[V], int parent[V]) {
                     path[count++] = v;
 
                 for (int j = count - 1; j >= 0; j--)
-                    printf("%d ", path[j]);
+                    printf("%d ", path[j]+1);
                 
                 printf("\n");
             }
@@ -62,6 +64,7 @@ void BellmanFord(int V, int graph[V][V], int src) {
 
     printMatrix(V, graph);
 
+    printf("\nDistance Table:");
     for (int k = 1; k < V; k++) {
         for (int u = 0; u < V; u++) {
             for (int v = 0; v < V; v++) {
@@ -87,17 +90,19 @@ void BellmanFord(int V, int graph[V][V], int src) {
 }
 
 int main() {
-    int V = 5;
-    int graph[5][5] = {
-        {0, 6, INF, 7, INF},
-        {INF, 0, 5, 8, -4},
-        {INF, -2, 0, INF, INF},
-        {INF, INF, -3, 0, 9},
-        {2, INF, 7, INF, 0}
+    int V = 7;
+    int cost[7][7] = {
+        {0, 4, INF, 7, -3, INF, 4},
+        {6, 0, -2, 6, INF, 1, INF},
+        {4, 3, 0, INF, 1, 4, INF},
+        {3, INF, 3, 0, INF, 5, 5},
+        {INF, 4, INF, 2, 0, INF, INF},
+        {-1, 2, -2, INF, -2, 1, 1},
+        {INF, INF, INF, 6, -2, 1, 0}
     };
 
     int src = 0;
-    BellmanFord(V, graph, src);
+    BellmanFord(V, cost, src);
 
     return 0;
 }
