@@ -84,11 +84,11 @@ int main() {
         }
     }
 
-    cost[0][1] = 8; cost[0][2] = 3; cost[2][1] = 2;
-    cost[4][3] = 6; cost[1][3] = 4; cost[1][0] = 2;
-    cost[0][4] = -4; cost[3][2] = -5; cost[1][2] = -2;
-    cost[4][0] = 6; cost[1][4] = 7; cost[2][3] = 6;
-    cost[3][0] = -2; cost[3][4] = -2;
+    cost[0][1] = -2; cost[0][2] = -4; cost[0][3] = 3; cost[0][4] = -1;
+    cost[1][0] = 3; cost[1][2] = 2; cost[1][3] = 2; cost[1][4] = 4;
+    cost[2][0] = 6; cost[2][1] = 2; cost[2][3] = 2; cost[2][4] = 4;
+    cost[3][0] = 3; cost[3][1] = 2; cost[3][2] = 2; cost[3][4] = 3;
+    cost[4][0] = 5; cost[4][1] = 4; cost[4][2] = -3; cost[4][3] = 3;
 
     AllPaths(n);
     printf("Source\tDestination\tLength\tPath\n");
