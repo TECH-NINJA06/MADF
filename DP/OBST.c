@@ -64,7 +64,7 @@ void OBST(int p[], int q[], int n) {
 
 int main() {
     int n;
-    printf("Enter the number of keys\n");
+    printf("Enter the number of keys: ");
     scanf("%d", &n);
     int p[n + 1], q[n + 1];
 
