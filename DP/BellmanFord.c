@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <limits.h>
 
 #define INF INT_MAX
@@ -25,7 +26,6 @@ void printDistanceTable(int V, int dist[V], int iteration) {
         else
             printf("%-5d ", dist[i]);
     }
-    // printf("\n");
 }
 
 
@@ -90,6 +90,8 @@ void BellmanFord(int V, int graph[V][V], int src) {
 }
 
 int main() {
+    clock_t start, end;
+    double time_taken;
     int V = 7;
     int cost[7][7] = {
         {0, 4, INF, 7, -3, INF, 4},
@@ -102,7 +104,12 @@ int main() {
     };
 
     int src = 0;
+    start = clock();
     BellmanFord(V, cost, src);
+    end = clock();
+    time_taken = (((double)(end - start)) / CLOCKS_PER_SEC) * 1000;
+
+    printf("\nExecution Time: %.6f ms\n", time_taken);
 
     return 0;
 }

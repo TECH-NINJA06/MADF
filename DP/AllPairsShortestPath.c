@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <limits.h>
 
 #define MAX_N 100
@@ -74,6 +75,9 @@ void AllPaths(int n) {
 }
 
 int main() {
+    clock_t start, end; 
+    double time_taken;
+
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (i == j)
@@ -89,7 +93,10 @@ int main() {
     cost[3][0] = 3; cost[3][1] = 2; cost[3][2] = 2; cost[3][4] = 3;
     cost[4][0] = 5; cost[4][1] = 4; cost[4][2] = -3; cost[4][3] = 3;
 
+    start = clock();
     AllPaths(n);
+    end = clock();
+    time_taken = (((double) (end - start)) / CLOCKS_PER_SEC) * 1000;
     printf("Source\tDestination\tLength\tPath\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
@@ -103,6 +110,7 @@ int main() {
     }
 
     printf("\n");
+    printf("\nExecution Time: %.6f ms\n", time_taken);
 
     return 0;
 }

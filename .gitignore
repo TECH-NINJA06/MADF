@@ -1,3 +1,12 @@
-*.exe
-*.txt
-*.vscode
+# Ignore everything
+*
+
+# Do not ignore .gitignore itself
+!.gitignore
+
+# Do not ignore .asm files
+!*.c
+
+#dont ignore folders
+!*/
+!*/*.c
