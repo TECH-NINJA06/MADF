@@ -9,14 +9,13 @@ struct Edge {
 };
 
 void printVicinity(int n, int selected[], int costs[]) {
-    printf("Nearby nodes and costs: ");
-    for (int i = 0; i < n; i++) {
+   for (int i = 0; i < n; i++) {
         if (selected[i]) {
-            printf("Node %d: 0, ", i + 1);
+            printf("Node %d: 0\n", i + 1);
         } else if (costs[i] != INF) {
-            printf("Node %d: %d, ", i + 1, costs[i]); 
+            printf("Node %d: %d\n", i + 1, costs[i]); 
         } else {
-            printf("Node %d: INF, ", i + 1);
+            printf("Node %d: INF\n", i + 1);
         }
     }
     printf("\n");

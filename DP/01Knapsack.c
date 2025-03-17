@@ -1,19 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
+#include <sys/time.h>
 #define MAX 100
 
 long long current_time_us() {
-    LARGE_INTEGER freq, counter;
-    QueryPerformanceFrequency(&freq);
-    QueryPerformanceCounter(&counter);
-    return (counter.QuadPart * 1000000) / freq.QuadPart; 
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000LL + tv.tv_usec;
 }
 
 struct Pair {
     double p; 
     double w; 
-} 
+} ;
 struct Pair pair[MAX];
 int b[MAX];
 
@@ -125,6 +124,16 @@ void AlgorithmDKnap(double p[], double w[], int x[], int n, int to)
     printf("\n");
 }
 
+<<<<<<< Updated upstream
+=======
+int main() {
+    int n = 3;
+    int W = 50;
+    int wt[] = {10, 20, 30};
+    int val[] = {60, 100, 120};
+
+    printf("Maximum value that can be obtained is %d \n", knapsack(n, W, wt, val));
+>>>>>>> Stashed changes
 
 int main()
 {
