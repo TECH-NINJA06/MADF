@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 4
+#define N 5
 
 int x[N];
 
@@ -15,10 +15,12 @@ int Place(int k, int i) {
 }
 
 void PrintBoard() {
-    char board[N][N] = { {'.', '.', '.', '.'}, 
-                         {'.', '.', '.', '.'}, 
-                         {'.', '.', '.', '.'}, 
-                         {'.', '.', '.', '.'} };
+    char board[N][N];
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            board[i][j] = '-';
+        }
+    }
 
     for (int i = 0; i < N; i++) {
         board[i][x[i]] = 'Q';
