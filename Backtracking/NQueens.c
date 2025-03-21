@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 4
-
-int x[N];
-
-int Place(int k, int i) {
+int Place(int x[], int k, int i) {
     for (int j = 0; j < k; j++) {
         if (x[j] == i || abs(x[j] - i) == abs(j - k)) {
             return 0;
@@ -14,7 +10,7 @@ int Place(int k, int i) {
     return 1;
 }
 
-void PrintBoard() {
+void PrintBoard(int x[], int N) {
     char board[N][N];
     for (int i = 0; i<N ; i++) {
         for (int j = 0; j<N; j++) {
@@ -35,7 +31,7 @@ void PrintBoard() {
     printf("\n");
 }
 
-void NQueens(int k, int n) {
+void NQueens(int x[], int k, int n) {
     for (int i = 0; i < n; i++) {
         if (Place(k, i)) {
             x[k] = i;
@@ -49,6 +45,10 @@ void NQueens(int k, int n) {
 }
 
 int main() {
+    int N;
+    printf("Enter the number of queens: ");
+    scanf("%d", &N);
+    int x[N];
     NQueens(0, N);
     return 0;
 }

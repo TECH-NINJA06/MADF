@@ -53,7 +53,7 @@ void Prim(struct Edge Edges[], int numEdges, int n) {
                 if (Edges[i].cost < costs[Edges[i].source - 1]) {
                     costs[Edges[i].source - 1] = Edges[i].cost;
                 }
-                if (Edges[i].cost < min) {
+                if (Edges[i].cost <= min) {
                     min = Edges[i].cost;
                     x = Edges[i].dest;
                     y = Edges[i].source;
