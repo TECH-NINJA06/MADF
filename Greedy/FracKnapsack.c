@@ -2,6 +2,7 @@
 
 int n;
 int p[100], w[100];
+double f[100];
 
 void printSolutionVector(float x[]) {
     printf("\nSolution Vector: ");
@@ -25,6 +26,17 @@ void knapsack(int n, int m, int mode) {
         ratio[i] = (float)p[i] / w[i];
     }
 
+    if (mode == 0) {
+        // Use user-provided fractions directly
+        for (int i = 0; i < n; i++) {
+            x[i] = f[i];
+            totalProfit += x[i] * p[i];
+        }
+        printf("\nSum pixi = %.2f", totalProfit);
+        printSolutionVector(x);
+        return;
+    }
+
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
             int swap = 0;
@@ -45,18 +57,17 @@ void knapsack(int n, int m, int mode) {
 
     printf("\nWeights (w): ");
     for (int i = 0; i < n; i++) {
-        printf("%d ", w[index[i]]);
+        printf("%d ", w[i]);
     }
 
     printf("\nProfits (p): ");
     for (int i = 0; i < n; i++) {
-        printf("%d ", p[index[i]]);
+        printf("%d ", p[i]);
     }
 
-    printf("\nFraction (f): ");
     for (int i = 0; i < n && remaining > 0; i++) {
         int id = index[i];
-
+    
         if (w[id] <= remaining) {
             x[id] = 1.0;
             remaining -= w[id];
@@ -66,7 +77,12 @@ void knapsack(int n, int m, int mode) {
             totalProfit += x[id] * p[id];
             remaining = 0;
         }
-        printf("%.2f ", x[id]);
+    }
+    
+    // Print all fractions after processing
+    printf("\nFraction (f): ");
+    for (int i = 0; i < n; i++) {
+        printf("%.2f ", x[i]);
     }
 
     printf("\nSum wixi = %d", m);
@@ -93,6 +109,14 @@ int main() {
     for (int i = 0; i < n; i++) {
         scanf("%d", &p[i]);
     }
+
+    printf("Enter fractions (f1, f2, ...): ");
+    for (int i = 0; i < n; i++) {
+        scanf("%lf", &f[i]);
+    }
+
+    printf("\nUsing User fractions");
+    knapsack(n, m, 0);
 
     printf("\nUsing Maximum Profit");
     knapsack(n, m, 2);
