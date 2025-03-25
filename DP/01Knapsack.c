@@ -1,175 +1,146 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#define MAX 100
-
-long long current_time_us() {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec * 1000000LL + tv.tv_usec;
-}
 
 struct Pair {
-    double p; 
-    double w; 
-} ;
-struct Pair pair[MAX];
-int b[MAX];
+    float p, w;
+    int from;
+};
 
-int maxm(int a, int b)
-{
-   if(a>b)
-        return a;
-    return b;
-}
-int Largest(struct Pair pair[], double w[], int t, int h, int i, int to)
-{
-    for (int j = t; j <= h; j++)
-    {
-        if (pair[j].w > to)
-            return j - 1;
+int Largest(struct Pair pair[], int w[], int t, int h, int i, int m) {
+    int u = t;
+    for (int j = t; j <= h; j++) {
+        if (pair[j].w + w[i] <= m) {
+            u = j;
+        }
     }
-    return h;
+    return u;
 }
-void TraceBack(double p[], double w[], struct Pair pair[], int x[], int to, int n)
-{
-    double totalProfit = pair[b[n + 1] - 1].p, weight = pair[b[n + 1] - 1].w; 
-    printf("\nprofit=%.2lf, weight=%.2lf\n", totalProfit, pair[b[n + 1] - 1].w);
-    double remainingWeight = to;
-    for (int i = n - 1; i >= 0; i--)
-    {
-        int flag = 0;
-        for (int j = b[i]; j < b[i + 1]; j++)
-        {
-            if (pair[j].p == totalProfit)
-            {
-                x[i] = 0;
-                flag = 1;
+
+void TraceBack(struct Pair pair[], int p[], int w[], int x[], int n, int b[]) {
+    for (int i = 0; i < n; i++) {
+        x[i] = 0;
+    }
+
+    int max_idx = 0;
+    float max_profit = 0;
+    for (int i = b[n]; i < b[n + 1]; i++) {
+        if (pair[i].p > max_profit) {
+            max_profit = pair[i].p;
+            max_idx = i;
+        }
+    }
+
+    for (int i = n; i >= 1; i--) {
+        int predecessor = pair[max_idx].from;
+        if (predecessor != -1) {
+            if (pair[max_idx].w != pair[predecessor].w) {
+                x[i - 1] = 1;
             }
         }
-        if (flag == 0)
-        {
-            totalProfit = totalProfit - p[i + 1];
-            weight = weight - w[i + 1];
-            x[i] = 1;
+        max_idx = predecessor;
+    }
+
+    printf("Solution vector x: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", x[i]);
+    }
+    printf("\n");
+
+    float total_profit = 0, total_weight = 0;
+    for (int i = 0; i < n; i++) {
+        if (x[i] == 1) {
+            total_profit += p[i];
+            total_weight += w[i];
         }
     }
+    printf("Total profit: %.0f\n", total_profit);
+    printf("Total weight: %.0f\n", total_weight);
 }
-void AlgorithmDKnap(double p[], double w[], int x[], int n, int to)
-{
-    pair[1].p = 0;
-    pair[1].w = 0;
-    int t = 1;
-    int h = 1;
-    int next = 2;
+
+void DKnap(int p[], int x[], int w[], int n, int m) {
+    struct Pair pair[1000];
+    int b[1000];
+    int t = 1, h = 1, next = 2;
+
+    pair[1].p = pair[1].w = 0.0;
+    pair[1].from = -1;
     b[0] = 1;
-    b[1] = 2;
-    for (int i = 1; i <= n; i++)
-    {
+    b[1] = next;
+
+    printf("\nS^0 = { (0,0) }");
+
+    for (int i = 1; i <= n; i++) {
         int k = t;
-        int u = Largest(pair, w, t, h, i, to);
-        for (int j = t; j <= u; j++)
-        {
-            double pp = pair[j].p + p[i];
-            double ww = pair[j].w + w[i];
-            while (k <= h && pair[k].w < ww)
-            {
-                pair[next].p = pair[k].p;
-                pair[next].w = pair[k].w;
+        int u = Largest(pair, w, t, h, i - 1, m);
+        printf("\nS^%d = {", i);
+
+        for (int j = t; j <= u; j++) {
+            float pp = pair[j].p + p[i - 1];
+            float ww = pair[j].w + w[i - 1];
+
+            while ((k <= h) && (pair[k].w <= ww)) {
+                printf(" (%.0f,%.0f),", pair[k].p, pair[k].w);
+                pair[next] = pair[k];
                 next++;
                 k++;
             }
-            if (k <= h && pair[k].w == ww)
-            {
+
+            if ((k <= h) && (pair[k].w == ww)) {
                 if (pp < pair[k].p)
-                {
                     pp = pair[k].p;
-                }
                 k++;
             }
-            if (pp > pair[next - 1].p && ww <= to)
-            {
+
+            if (pp > pair[next - 1].p) {
+                printf(" (%.0f,%.0f),", pp, ww);
                 pair[next].p = pp;
                 pair[next].w = ww;
+                pair[next].from = j;
                 next++;
             }
-            while (k <= h && pair[k].p <= pair[next - 1].p)
+
+            while ((k <= h) && (pair[k].p <= pair[next - 1].p)) {
                 k++;
+            }
         }
-        while (k <= h)
-        {
-            pair[next].p = pair[k].p;
-            pair[next].w = pair[k].w;
+
+        while (k <= h) {
+            printf(" (%.0f,%.0f),", pair[k].p, pair[k].w);
+            pair[next] = pair[k];
             next++;
             k++;
         }
+
+        printf("\b }");
         t = h + 1;
         h = next - 1;
         b[i + 1] = next;
     }
-    TraceBack(p, w, pair, x, to, n);
-    printf("\n\n");
-    int cnt = 1;
-    for (int i = 0; i < n + 1; i++)
-    {
-        printf(" S%d: ", i);
-        for (int j = b[i]; j < b[i + 1]; j++)
-        {
-            printf(" (%.0lf,%.0lf) ", pair[cnt].p, pair[cnt].w);
-            cnt++;
-        }
-        printf("\n");
-    }
 
     printf("\n");
+
+    TraceBack(pair, p, w, x, n, b);
 }
 
-<<<<<<< Updated upstream
-=======
 int main() {
-    int n = 3;
-    int W = 50;
-    int wt[] = {10, 20, 30};
-    int val[] = {60, 100, 120};
-
-    printf("Maximum value that can be obtained is %d \n", knapsack(n, W, wt, val));
->>>>>>> Stashed changes
-
-int main()
-{
-    double p[MAX]; 
-    double w[MAX]; 
-    int x[MAX];   
-    int n;         
-    int to;        
-    printf("Enter the number of items: ");
+    int n, m;
+    printf("Enter n: ");
     scanf("%d", &n);
-    printf("Enter the profits of items:\n");
-    for (int i = 1; i <= n; i++)
-    scanf("%lf", &p[i]);
-    printf("\n");
-    printf("Enter the weights of items:\n");
-    for (int i = 1; i <= n; i++)
-    scanf("%lf", &w[i]);
-    printf("\n");
-    printf("Enter capacity: ");
-    scanf("%d", &to);
-    long long start = current_time_us();
-    AlgorithmDKnap(p, w, x, n, to);
-    long long end = current_time_us();
-    
-    printf("\nTime taken: %lldμs\n", end - start);
-    printf("\n   ");
-    for (int i = 0; i < n; i++)
-    {
-        printf("[%d]", i + 1);
+    printf("Enter m: ");
+    scanf("%d", &m);
+
+    int p[n], w[n], x[n];
+
+    printf("Enter profits:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &p[i]);
     }
-    printf("\n");
-    printf("X :");
-    for (int i = 0; i < n; i++)
-    {
-        printf(" %d ",x[i]);
+
+    printf("Enter weights:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &w[i]);
     }
-    printf("\n");
+
+    DKnap(p, x, w, n, m);
+
     return 0;
 }
