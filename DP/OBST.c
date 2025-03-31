@@ -2,6 +2,8 @@
 #define MAX 100
 
 int w[MAX][MAX], c[MAX][MAX], r[MAX][MAX];
+char a[max][max]={"","break","continue","do","short","union"};
+
 
 int Find(int c[MAX][MAX], int r[MAX][MAX], int i, int j) {
     int l, min = 9999;
@@ -62,6 +64,19 @@ void OBST(int p[], int q[], int n) {
     }
 }
 
+void printTree(int r[][max], int i, int j, int level) {
+    if (i < j) {
+        int root = r[i][j];
+        for (int l=0;l<level;l++) printf("  ");
+        printf("%s\n", a[root]);
+        printTree(r, i, root - 1, level + 1);
+        printTree(r, root, j, level + 1);
+    } else if (i == j) {
+        for (int l = 0; l < level; l++) printf("  ");
+    }
+}
+
+
 int main() {
     int n;
     printf("Enter the number of keys: ");
@@ -78,5 +93,7 @@ int main() {
     }
     
     OBST(p, q, n);
+    printf("\n\n");
+    printTree(r, 0, 5, 0);
     return 0;
 }
