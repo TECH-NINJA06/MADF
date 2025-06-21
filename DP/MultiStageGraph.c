@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <time.h>
 
 #define INF 1e9
 #define MAX_VERTICES 100   
@@ -19,7 +18,6 @@ struct Edge edges[] = {
     {6,10,11},{6,11,12},{6,13,13},  {7,10,13},{7,11,11},{7,12,12},  {8,11,12},{8,12,11},{8,13,13},  {9,10,13},{9,12,12},{9,13,11},
     {10,14,10},{11,14,12},{12,14,13},{13,14,11}
 };
-
 
 void setStages() {
     for(int i = 1; i <= numVertices; i++) {
@@ -105,8 +103,6 @@ void displayPath() {
 int main() {
     numVertices = 14;
     numStages = 5;
-    clock_t start, end; 
-    double time_taken;
     
     for (int i = 1; i <= numVertices; i++) {
         for (int j = 1; j <= numVertices; j++) {
@@ -123,12 +119,8 @@ int main() {
     displayPath();
 
     printf("\nBackward Graph\n");
-    start = clock();
     BGraph();
-    end = clock();
-    time_taken = (((double)(end - start))/CLOCKS_PER_SEC)*1000;
     displayPath();
-    printf("\nExecution Time: %.6f ms\n", time_taken); 
     
     return 0;
 }

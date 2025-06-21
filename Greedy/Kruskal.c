@@ -1,135 +1,145 @@
 #include <stdio.h>
-#include <string.h>
-
+#include <time.h>
+#define MAX 20
 typedef struct {
-    int u, v, w;
+    int u, v, cost;
 } Edge;
+Edge heap[MAX], t[MAX];
+int parent[MAX], heapSize = 0;
+int cost[MAX][MAX];
 
-int parent[100];
-
-
-void adjust(Edge a[], int i, int n) {
-    int j = 2 * i;
-    Edge item = a[i];
-    while (j <= n) {
-        if ((j < n) && (a[j].w > a[j + 1].w || 
-            (a[j].w == a[j + 1].w && a[j].u > a[j + 1].u))) {
-            j = j + 1;
-        }
-        if (item.w <= a[j].w && 
-            (item.w < a[j].w || item.u <= a[j].u)) {
+int Find(int u) {
+    while (parent[u] >= 0)
+        u = parent[u];
+    return u;
+}
+void Union(int u, int v) { parent[v] = u; }
+void InsertHeap(Edge edge) {
+    heap[heapSize] = edge;
+    int i = heapSize, p;
+    while (i > 0) {
+        p = (i - 1) / 2;
+        if (heap[p].cost <= heap[i].cost)
             break;
-        }
-        a[j / 2] = a[j];
-        j = 2 * j;
+        Edge temp = heap[i];
+        heap[i] = heap[p];
+        heap[p] = temp;
+        i = p;
     }
-    a[j / 2] = item;
+    heapSize++;
 }
-
-void heapify(Edge a[], int n) {
-    for (int i = n / 2; i >= 1; i--) {
-        adjust(a, i, n);
-    }
-}
-
-Edge DelMin(Edge a[], int *n) {
-    if (*n == 0) {
-        printf("Heap is empty\n");
-        Edge empty = {-1, -1, -1};
-        return empty;
-    }
-    Edge item = a[1];
-    a[1] = a[*n];
-    (*n)--;
-    adjust(a, 1, *n);
-    return item;
-}
-
-void showmst(int n, Edge t[]) {
-    printf("The edges of the Minimum Spanning Tree (MST) are:\n");
-    for (int i = 0; i < n - 1; i++) {
-        printf("%d - %d (Weight: %d)\n", t[i].u, t[i].v, t[i].w);
+void Adjust(int index)
+{
+    int smallest, left, right;
+    while (1)
+    {
+        left = 2 * index + 1;
+        right = 2 * index + 2;
+        smallest = index;
+        if (left < heapSize && heap[left].cost < heap[smallest].cost)
+            smallest = left;
+        if (right < heapSize && heap[right].cost < heap[smallest].cost)
+            smallest = right;
+        if (smallest == index)
+            break;
+        Edge temp = heap[index];
+        heap[index] = heap[smallest];
+        heap[smallest] = temp;
+        index = smallest;
     }
 }
-
-int find(int i) {
-    while (parent[i] != i) {
-        parent[i] = parent[parent[i]]; 
-        i = parent[i];
+Edge DeleteMin()
+{
+    Edge minEdge = heap[0];
+    heapSize--;
+    heap[0] = heap[heapSize];
+    Adjust(0);
+    return minEdge;
+}
+int Kruskal(Edge E[], int cost[][MAX], int n, Edge t[])
+{
+    int i, j, k, mincost = 0;
+    printf("%8s", " ");
+    for (i = 0; i < n; i++)
+    {
+        printf("%5d", i + 1);
     }
-    return i;
-}
-
-void unions(int i, int j) {
-    parent[i] = j;
-}
-
-int kruskal(Edge t[], int n, int cost[100][100], Edge a[], int edgeCount) {
-    heapify(a, edgeCount);
-    int mincost = 0;
-    int i = 0;
-    while ((i < n - 1) && (edgeCount > 0)) {
-        Edge e = DelMin(a, &edgeCount);
-        int j = find(e.u);
-        int k = find(e.v);
-        
-        if (j != k) {
-            t[i] = e;
-            mincost += e.w;
-            unions(j, k);
+    printf("%5s %5s", "j", "k");
+    printf("\nparent: ");
+    for (i = 0; i < n; i++)
+    {
+        parent[i] = -1;
+        printf("%5d", parent[i]);
+    }
+    printf("\n");
+    i = 0;
+    while ((i < n - 1) && (heapSize > 0))
+    {
+        Edge edge = DeleteMin();
+        j = Find(edge.u);
+        k = Find(edge.v);
+        if (j != k)
+        {
             i++;
+            t[i - 1] = edge;
+            mincost += cost[edge.u][edge.v];
+            Union(j, k);
         }
+        printf("\nparent: ");
+        for (int h = 0; h < n; h++)
+        {
+            printf("%5d", parent[h]);
+        }
+        printf("%5d %5d", edge.u, edge.v);
+        printf("\n");
+        printf("Mincost: %d\n", mincost);
     }
-    
-    if (i != n - 1) {
-        printf("The graph is not connected, MST cannot be formed.\n");
+    if (i != n - 1)
+    {
+        printf("No spanning tree\n");
         return -1;
     }
-    
-    return mincost;
+    else
+    {
+        return mincost;
+    }
 }
-
-int main() {
-    Edge t[10];
-    int cost[100][100] = {0};
-    Edge a[100];
-    int n, i, j;
-    
+void printT(int n, Edge t[])
+{
+    printf("Edge\t j\tnear[j]\n");
+    for (int i = 0; i <= n - 2; i++)
+    {
+        printf("%d\t%2d\t%4d\n", i + 1, t[i].u, t[i].v);
+    }
+}
+int main()
+{
+    int n, e;
     printf("Enter the number of vertices: ");
     scanf("%d", &n);
-    
-    for (i = 0; i < n; i++) {
-        parent[i] = i;
+    printf("Enter the number of edges: ");
+    scanf("%d", &e);
+    Edge E[e];
+    printf("Enter the edges (u v cost):\n");
+    for (int i = 0; i < e; i++)
+    {
+        scanf("%d %d %d", &E[i].u, &E[i].v, &E[i].cost);
     }
-    
-    printf("Enter the edges and their costs (enter -1 -1 to stop):\n");
-    int edgeCount = 0;
-    while (1) {
-        int u, v, w;
-        scanf("%d %d", &u, &v);
-        if (u == -1 && v == -1) {
-            break;
-        }
-        printf("Enter the cost of (%d, %d): ", u, v);
-        scanf("%d", &w);
-        cost[u][v] = w;
-        cost[v][u] = w;
-        a[++edgeCount] = (Edge){u, v, w};
+    for (int i = 0; i < MAX; i++)
+        for (int j = 0; j < MAX; j++)
+            cost[i][j] = 0;
+    for (int i = 0; i < e; i++)
+    {
+        cost[E[i].u][E[i].v] = E[i].cost;
+        cost[E[i].v][E[i].u] = E[i].cost;
+        InsertHeap(E[i]);
     }
-    
-    printf("The cost adjacency matrix is:\n");
-    for (i = 1; i <= n; i++) {
-        for (j = 1; j <= n; j++) {
-            printf("%d ", cost[i][j]);
-        }
-        printf("\n");
+    int minCost = Kruskal(E, cost, n, t);
+
+    if (minCost != -1)
+    {
+        printf("\nMinimum Cost: %d\n", minCost);
+        printT(n, t);
     }
-    
-    int mincost = kruskal(t, n, cost, a, edgeCount);
-    if (mincost != -1) {
-        showmst(n, t);
-        printf("Minimum cost of spanning tree: %d\n", mincost);
-    }
-    
     return 0;
 }

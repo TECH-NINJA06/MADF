@@ -3,91 +3,50 @@
 
 #define MAX 100
 
-typedef struct {
-    int length;
-    char arrow;
-} LCSResult;
-
 void lcs(char *X, char *Y) {
-    int m = strlen(X);
-    int n = strlen(Y);
-    LCSResult L[MAX][MAX];
-    int visited[MAX][MAX] = {0};
+    int n = strlen(X);
+    int m = strlen(Y);
+    int L[MAX + 1][MAX + 1];
+    
+    for (int i = 0; i <= n; i++)
+        L[i][0] = 0;
+    for (int j = 0; j <= m; j++)
+        L[0][j] = 0;
 
-    for (int i = 0; i <= m; i++) {
-        for (int j = 0; j <= n; j++) {
-            if (i == 0 || j == 0) {
-                L[i][j].length = 0;
-                L[i][j].arrow = ' ';
-            } else if (X[i - 1] == Y[j - 1]) {
-                L[i][j].length = 1 + L[i - 1][j - 1].length;
-                L[i][j].arrow = '\\'; 
-            } else if (L[i - 1][j].length >= L[i][j - 1].length) {
-                L[i][j].length = L[i - 1][j].length;
-                L[i][j].arrow = '^'; 
-            } else {
-                L[i][j].length = L[i][j - 1].length;
-                L[i][j].arrow = '<';
-            }
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (X[i - 1] == Y[j - 1])
+                L[i][j] = L[i - 1][j - 1] + 1;
+            else
+                L[i][j] = (L[i - 1][j] > L[i][j - 1]) ? L[i - 1][j] : L[i][j - 1];
         }
     }
 
-    int index = L[m][n].length;
+    int index = L[n][m];
     char lcs_seq[index + 1];
     lcs_seq[index] = '\0';
 
-    int i = m, j = n;
+    int i = n, j = m;
     while (i > 0 && j > 0) {
-        visited[i][j] = 1; 
-        if (L[i][j].arrow == '\\') {
+        if (X[i - 1] == Y[j - 1]) {
             lcs_seq[--index] = X[i - 1];
             i--;
             j--;
-        } else if (L[i][j].arrow == '^') {
+        } else if (L[i - 1][j] > L[i][j - 1]) {
             i--;
         } else {
             j--;
         }
     }
 
-    printf("\n\n    ");
-    for (int j = 0; j <= n; j++) {
-        if (j == 0)
-            printf("       ");
-        else
-            printf("  %c  ", Y[j - 1]);
-    }
-    printf("\n");
-
-    for (int i = 0; i <= m; i++) {
-        if (i == 0)
-            printf("     ");
-        else
-            printf(" %c   ", X[i - 1]);
-
-        for (int j = 0; j <= n; j++) {
-            char display_arrow = visited[i][j] ? L[i][j].arrow : ' ';
-            printf(" %c%2d ", display_arrow, L[i][j].length);
-        }
-        printf("\n");
-    }
-
-    
-    printf("\nLCS Length: %d\n", L[m][n].length);
-    printf("\nLCS: %s\n", lcs_seq);
+    printf("%d\n", L[n][m]);  
+    printf("%s\n", lcs_seq);  
 }
-
 
 int main() {
     char X[MAX], Y[MAX];
-
-    printf("Enter first string: ");
     scanf("%s", X);
-
-    printf("Enter second string: ");
     scanf("%s", Y);
-
     lcs(X, Y);
-
     return 0;
 }

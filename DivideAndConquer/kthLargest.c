@@ -1,65 +1,76 @@
 #include <stdio.h>
-#include <string.h>
+#include <time.h>
+#include <stdbool.h>
+#define BOLD "\033[1m"
+#define RESET "\033[0m"
+int n = 13;
 
-void Interchange(char **arr, int i, int j) {
-    char *temp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = temp;
-}
-
-int Partition(char **arr, int low, int high) {
-    char *pivot = arr[low];
-    int i = low + 1;
-    int j = high;
-
-    while (1) {
-        while (i <= high && strcmp(arr[i], pivot) >= 0) 
-            i++;
-        while (j >= low && strcmp(arr[j], pivot) < 0)
-            j--;
-
-        if (i >= j)
-            break;
-
-        Interchange(arr, i, j);
-    }
-
-    Interchange(arr, low, j);
-    return j;
-}
-
-void Select(char **arr, int n, int k) {
-    int low = 0, high = n - 1;
-
-    while (low <= high) {
-        int j = Partition(arr, low, high);
-        for(int i = 0; i < n; i++)
-            printf("%s, ", arr[i]);
-        printf("j=%d\n",j+1);
-        if (j == k) {
-            printf("The %dth largest string is: %s\n", k+1, arr[j]);
-            return;
-        } else if (j > k) {
-            high = j - 1;
+void display(char a[], int p, int q, int pivotIndex) {
+    printf("\n\n");
+    for (int i = 0; i < p; i++)
+        printf("%c ", a[i]);
+    printf("[ ");
+    for (int i = p; i <= q; i++) {
+        if (i == pivotIndex) {
+            printf(BOLD "%c" RESET " ", a[i]);
         } else {
-            low = j + 1;
+            printf("%c ", a[i]);
         }
     }
+    printf("] ");
+    for (int i = q + 1; i < n; i++)
+        printf("%c ", a[i]);
+}
+
+
+void interchange(char a[], int i, int j) {
+    char temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+}
+int partition(char a[], int p, int q) {
+    char pivot = a[p];
+    int i = p + 1;
+    int j = q;
+    display(a, p, q, p);
+    while (true) {
+        while (i <= q && a[i] < pivot)
+            i++;
+        while (j >= p && a[j] > pivot)
+            j--;
+        if (i < j) {
+            interchange(a, i, j);
+            display(a, p, q, p);
+        } else {
+            break;
+        }
+    }
+    interchange(a, p, j);
+    display(a, p, q, j);
+    printf("\tj = %d", j + 1);
+    return j;
+}
+void select(char a[], int k) {
+    int low = 0, up = n - 1;
+    int j;
+    do {
+        j = partition(a, low, up);
+        if (k < j) {
+            up = j - 1;
+        } else if (k > j) {
+            low = j + 1;
+        } else {
+            printf("\nThe %dth smallest element is: %c\n", k + 1, a[k]);
+            return;
+        }
+    } while (true);
 }
 
 int main() {
-    char *strings[] = {"mumbai", "pune", "bangalore", "chennai", "goa", "delhi", "agra", "noida", "karnataka", "kanpur", "nashik", "lucknow", "hyderabad"};
+    int k = 4;
+    char a[13] = {'W', 'Y', 'S', 'A', 'G', 'I', 'O', 'V', 'C', 'H', 'P', 'B', 'R'};
 
-    int k;
-    printf("Enter the value of k: ");
-    scanf("%d", &k);
-
-    if (k < 1 || k > 13) {
-        printf("Invalid value of k. It should be between 1 and 13.\n");
-        return 1;
-    }
-
-    Select(strings, 13, k-1);
+    select(a, k - 1);
 
     return 0;
 }

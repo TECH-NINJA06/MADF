@@ -1,7 +1,5 @@
 #include <stdio.h>
-#include <time.h>
 #include <limits.h>
-
 #define INF INT_MAX
 
 void printMatrix(int V, int matrix[V][V]) {
@@ -77,21 +75,19 @@ void BellmanFord(int V, int graph[V][V], int src) {
         printDistanceTable(V, dist, k);
     }
 
-    for (int u = 0; u < V; u++) {
-        for (int v = 0; v < V; v++) {
-            if (graph[u][v] != INF && dist[u] != INF && dist[u] + graph[u][v] < dist[v]) {
-                printf("\nGraph contains a negative weight cycle!\n");
-                return;
-            }
-        }
-    }
+    // for (int u = 0; u < V; u++) {
+    //     for (int v = 0; v < V; v++) {
+    //         if (graph[u][v] != INF && dist[u] != INF && dist[u] + graph[u][v] < dist[v]) {
+    //             printf("\nGraph contains a negative weight cycle!\n");
+    //             return;
+    //         }
+    //     }
+    // }
 
     printShortestPaths(V, src, dist, parent);
 }
 
 int main() {
-    clock_t start, end;
-    double time_taken;
     int V = 7;
     int cost[7][7] = {
         {0, 4, INF, 7, -3, INF, 4},
@@ -104,12 +100,7 @@ int main() {
     };
 
     int src = 0;
-    start = clock();
     BellmanFord(V, cost, src);
-    end = clock();
-    time_taken = (((double)(end - start)) / CLOCKS_PER_SEC) * 1000;
-
-    printf("\nExecution Time: %.6f ms\n", time_taken);
 
     return 0;
 }

@@ -1,74 +1,84 @@
 #include <stdio.h>
-#define MAX 100
-
-void quickSort(int arr[], int low, int up);
-int partition(int arr[], int low, int up);
-void swap(int *a, int *b);
-void display(int arr[], int size, int pivotIndex);
-
-int n, k = 1;
-
-int main() {
-    int i, arr[MAX];
-    printf("Enter the number of elements: ");
-    scanf("%d", &n);
-    for (i = 0; i < n; i++) {
-        printf("Enter element %d: ", i + 1);
-        scanf("%d", &arr[i]);
+#define BOLD "\033[1m"
+#define RESET "\033[0m"
+int a[] = {43, -12, 11, 58, -5, 29, 65, -17, 37};
+int n = 9;
+void display(int p, int q, int pivotIndex, int placed)
+{
+    printf("\n\n");
+    for (int i = 0; i < p; i++)
+        printf("%d ", a[i]);
+    printf("[ ");
+    for (int i = p; i <= q; i++)
+    {
+        if (i == pivotIndex)
+        {
+            if (placed)
+            {
+                printf("] " BOLD "%d" RESET " [ ", a[i]);
+            }
+            else
+                printf(BOLD "%d" RESET " ", a[i]);
+        }
+        else
+        {
+            printf("%d ", a[i]);
+        }
     }
-    printf("\nInitial array: ");
-    display(arr, n, -1); 
-    quickSort(arr, 0, n - 1);
-    printf("\nThe sorted array in descending order is:\n");
-    display(arr, n, -1); 
-    return 0;
-}
 
-void quickSort(int arr[], int low, int up) {
-    if (low < up) {
-        int pi = partition(arr, low, up);
-        printf("\nPass %d: Pivot = %d\n", k++, arr[pi]);
-        display(arr, n, pi);
-        quickSort(arr, low, pi - 1);
-        quickSort(arr, pi + 1, up);
-    }
+    printf("] ");
+    for (int i = q + 1; i < n; i++)
+        printf("%d ", a[i]);
 }
-
-int partition(int arr[], int low, int up) {
-    int pivot = arr[low];
-    int i = low;
-    int j = up;
-    while (i < j) {
-        while (arr[i] >= pivot && i < up) {
+void interchange(int a[], int i, int j)
+{
+    int temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+}
+int partition(int a[], int p, int q)
+{
+    int pivot = a[p];
+    int i = p + 1;
+    int j = q;
+    while (1)
+    {
+        while (i <= q && a[i] < pivot)
             i++;
-        }
-        while (arr[j] < pivot) {
+        while (a[j] > pivot)
             j--;
+        if (i < j)
+        {
+            interchange(a, i, j);
+            display(p, q, j, 1);
+            display(p, q, p, 0);
         }
-        if (i < j) {
-            swap(&arr[i], &arr[j]);
+        else
+        {
+            break;
         }
     }
-    swap(&arr[low], &arr[j]);
+    interchange(a, p, j);
+    display(p, q, j, 1);
+    printf("\tj = %d", j + 1);
     return j;
 }
-
-void swap(int *a, int *b) {
-    int temp = *a;
-    *a = *b;
-    *b = temp;
+void quickSort(int p, int q)
+{
+    if (p < q)
+    {
+        int pivotIndex = partition(a, p, q);
+        quickSort(p, pivotIndex - 1);
+        quickSort(pivotIndex + 1, q);
+    }
 }
-
-void display(int arr[], int size, int pivotIndex) {
-    printf("[ ");
-    for (int i = 0; i < pivotIndex; i++) {
-        printf("%d ", arr[i]);
-    }
-    if (pivotIndex != -1) {
-        printf("] %d [ ", arr[pivotIndex]);  
-    }
-    for (int i = pivotIndex + 1; i < size; i++) {
-        printf("%d ", arr[i]);
-    }
-    printf("]\n");
+int main()
+{
+    display(0, n - 1, 0, 0);
+    quickSort(0, n - 1);
+    printf("\n\nThe sorted array is:\n");
+    for (int i = 0; i < n; i++)
+        printf("%d ", a[i]);
+    printf("\n");
+    return 0;
 }

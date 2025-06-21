@@ -1,64 +1,68 @@
 #include <stdio.h>
-#include <time.h> // Include time.h for measuring execution time
+#include <stdlib.h>
+#include <string.h>
 #define MAX 100
-int x[MAX], n;
+#define TRUE 1
+#define FALSE 0
 int G[MAX][MAX];
+void Hamiltonian(int x[], int n, int k);
+solnCount = 0, startVertex = 0;
 
-void NextValue(int k){
-    while(1){
-        x[k]=(x[k]+1)%(n+1);
-        if(x[k]==0) return;
-        int j;
-        if(G[x[k-1]][x[k]]!=0){
-            int valid = 1;
-            for(int j=1; j<k; j++){
-                if(x[j] == x[k]){
-                    valid = 0;
+int main() {
+    int n, x[MAX], k;
+    printf("\nEnter the number of nodes:");
+    scanf("%d", &n);
+    printf("Enter the Adjacency Matrix:\n");
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= n; j++)
+            scanf("%d", &G[i][j]);
+    }
+    startVertex = 1;
+    x[1] = startVertex;
+    for (int i = 2; i <= n; i++)
+        x[i] = 0;
+    Hamiltonian(x, n, 2);
+    printf("\nTotal number of solutions: %d\n", solnCount);
+    return 0;
+}
+
+void nextval(int x[], int n, int k) {
+    do {
+        x[k] = (x[k] + 1) % (n + 1);
+        if (x[k] == 0)
+            return;
+        if (G[x[k - 1]][x[k]] != 0) {
+            for (int j = 1; j < k; j++) {
+                if (x[j] == x[k]) {
                     break;
                 }
             }
-            if(valid && ((k < n) || (k == n && G[x[k]][x[0]] != 0))){
-                return;
+            if (j == k) {
+                if ((k < n) || (k == n && G[x[n]][x[1]] != 0))
+                    return;
             }
         }
-    }
+    } while (TRUE);
 }
-void Hamiltonian(int k){
-    while(1){
-        NextValue(k);
-        if(x[k]==0)return;
-        if(k==n-1){
-            for(int i=0; i<n; i++)
-                printf("%d ", x[i]);
-            printf("%d\n", x[0]); // Ensure the cycle ends at the starting vertex
+void Hamiltonian(int x[], int n, int k) {
+    do
+    {
+        nextval(x, n, k);
+        if (x[k] == 0) {
+            return;
         }
-        else
-            Hamiltonian(k+1);        
-    }
-}
-int main(){
-    printf("Enter the number of vertices: ");
-    scanf("%d", &n);
-
-    printf("Enter the adjacency matrix:\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            scanf("%d", &G[i][j]);
+        if (k == n) {
+            printf("Solution: ");
+            for (int j = 1; j <= n; j++) {
+                printf("%d ", x[j]);
+            }
+            printf("%d\n", x[1]);
+            if (startVertex == 1)
+                ++solnCount;
         }
-    }
-
-    for (int i = 0; i < n; i++) {
-        x[i] = 0;
-    }
-
-    x[0] = 1; 
-    printf("Hamiltonian cycles are:\n");
-
-    clock_t start_time = clock(); 
-    Hamiltonian(1);
-    clock_t end_time = clock(); 
-    double time_taken = ((double)(end_time - start_time) / CLOCKS_PER_SEC) * 1000;
-    printf("Execution time: %.2f ms\n", time_taken);
-
-    return 0;
+        else {
+            Hamiltonian(x, n, k + 1);
+        }
+    } while (TRUE);
 }

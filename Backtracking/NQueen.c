@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int Place(int x[], int k, int i) {
     for (int j = 0; j < k; j++) {
@@ -55,13 +56,22 @@ int NQueens(int x[], int k, int n, int *solutionCount, int *firstSolutionPrinted
 }
 
 int main() {
+    clock_t start, end;
+    double time_ms;
     for (int N = 2; N <= 12; N++) {
         int x[N];
         int solutionCount = 0;
         int firstSolutionPrinted = 0;
+        if (N == 4) {
+            start = clock();
+            solutionCount = NQueens(x, 0, N, &solutionCount, &firstSolutionPrinted);
+            end = clock();
+        }
         solutionCount = NQueens(x, 0, N, &solutionCount, &firstSolutionPrinted);
         printf("N = %d, Number of solutions: %d\n", N, solutionCount);
         printf("-----------------------------\n");
     }
+    time_ms = ((double)(end - start)) * 1000.0 / CLOCKS_PER_SEC;
+    printf("\nExecution time: %.6f ms\n", time_ms);
     return 0;
 }

@@ -1,11 +1,9 @@
 #include <stdio.h>
-struct Pair
-{
+struct Pair {
     float p, w;
     int from;
 };
-int Largest(struct Pair pair[], int w[], int t, int h, int i, int m)
-{
+int Largest(struct Pair pair[], int w[], int t, int h, int i, int m) {
     int low = t, high = h, u = t - 1;
     while (low <= high)
     {
@@ -65,11 +63,10 @@ void TraceBack(struct Pair pair[], int p[], int w[], int x[], int n, int b[])
             total_weight += w[i];
         }
     }
-    printf("Total profit: %.0f\n", total_profit);
-    printf("Total weight: %.0f\n", total_weight);
+    printf("Total profit: %f\n", total_profit);
+    printf("Total weight: %d\n", total_weight);
 }
-void DKnap(int p[], int x[], int w[], int n, int m)
-{
+void DKnap(int p[], int x[], int w[], int n, int m) {
     struct Pair pair[1000];
     int b[1000];
     int t = 1, h = 1, next = 2;
@@ -78,34 +75,29 @@ void DKnap(int p[], int x[], int w[], int n, int m)
     b[0] = 1;
     b[1] = next;
     printf("\nS^0 = { (0,0) }");
-    for (int i = 1; i <= n; i++)
-    {
+    for (int i = 1; i <= n; i++) {
         int k = t;
         int u = Largest(pair, w, t, h, i - 1, m);
         printf("\nS^%d = {", i);
 
-        for (int j = t; j <= u; j++)
-        {
+        for (int j = t; j <= u; j++) {
             float pp = pair[j].p + p[i - 1];
             float ww = pair[j].w + w[i - 1];
 
-            while ((k <= h) && (pair[k].w <= ww))
-            {
+            while ((k <= h) && (pair[k].w <= ww)) {
                 printf(" (%.0f,%.0f),", pair[k].p, pair[k].w);
                 pair[next] = pair[k];
                 next++;
                 k++;
             }
 
-            if ((k <= h) && (pair[k].w == ww))
-            {
+            if ((k <= h) && (pair[k].w == ww)) {
                 if (pp < pair[k].p)
                     pp = pair[k].p;
                 k++;
             }
 
-            if (pp > pair[next - 1].p)
-            {
+            if (pp > pair[next - 1].p) {
                 printf(" (%.0f,%.0f),", pp, ww);
                 pair[next].p = pp;
                 pair[next].w = ww;
@@ -113,14 +105,12 @@ void DKnap(int p[], int x[], int w[], int n, int m)
                 next++;
             }
 
-            while ((k <= h) && (pair[k].p <= pair[next - 1].p))
-            {
+            while ((k <= h) && (pair[k].p <= pair[next - 1].p)) {
                 k++;
             }
         }
 
-        while (k <= h)
-        {
+        while (k <= h) {
             printf(" (%.0f,%.0f),", pair[k].p, pair[k].w);
             pair[next] = pair[k];
             next++;

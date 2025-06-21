@@ -1,91 +1,135 @@
 #include <stdio.h>
 #include <limits.h>
-#define INF INT_MAX
+#include <time.h>
+#include <sys/time.h>
+#define MAX 30
 
-struct Edge {
-    int source;
-    int dest;
-    int cost;
+struct Edges {
+    int ori, dest;
 };
 
-void printVicinity(int n, int selected[], int costs[]) {
-   for (int i = 0; i < n; i++) {
-        if (selected[i]) {
-            printf("Node %d: 0\n", i + 1);
-        } else if (costs[i] != INF) {
-            printf("Node %d: %d\n", i + 1, costs[i]); 
-        } else {
-            printf("Node %d: INF\n", i + 1);
+int max_edges, n, count = 0;
+int t[MAX][2], near[MAX], cost[MAX][MAX];
+struct Edges E[MAX];
+
+int prims(struct Edges E[MAX], int cost[MAX][MAX], int n, int t[MAX][2]) {
+    int i, k, l, j, m, index, o, d;
+    int mincost = INT_MAX;
+    
+    for (i = 1; i <= count; i++) {
+        o = E[i].ori;
+        d = E[i].dest;
+        if (cost[o][d] < mincost || (cost[o][d] == mincost && o < k)) {
+            mincost = cost[o][d];
+            k = o;
+            l = d;
         }
     }
-    printf("\n");
-}
-
-void Prim(struct Edge Edges[], int numEdges, int n) {
-    int mincost = 0;   
-    int selected[n];  
-    int edge = 0;
-    int costs[n]; 
-
-    for (int i = 0; i < n; i++) {
-        selected[i] = 0; 
-        costs[i] = INF;
+    
+    t[0][0] = k;
+    t[0][1] = l;
+    
+    for (i = 1; i <= n; i++) {
+        near[i] = (cost[i][l] < cost[i][k]) ? l : k;
     }
-
-    selected[0] = 1;  
-    costs[0] = 0; 
-
-    while (edge < n - 1) {
-        int min = INF;
-        int x = -1, y = -1;
-
-        for (int i = 0; i < numEdges; i++) {
-            if (selected[Edges[i].source - 1] && !selected[Edges[i].dest - 1]) {
-                if (Edges[i].cost < costs[Edges[i].dest - 1]) {
-                    costs[Edges[i].dest - 1] = Edges[i].cost;
-                }
-                if (Edges[i].cost < min) {
-                    min = Edges[i].cost;
-                    x = Edges[i].source;
-                    y = Edges[i].dest;
-                }
-            } else if (selected[Edges[i].dest - 1] && !selected[Edges[i].source - 1]) {
-                if (Edges[i].cost < costs[Edges[i].source - 1]) {
-                    costs[Edges[i].source - 1] = Edges[i].cost;
-                }
-                if (Edges[i].cost <= min) {
-                    min = Edges[i].cost;
-                    x = Edges[i].dest;
-                    y = Edges[i].source;
-                }
+    near[k] = 0;
+    near[l] = 0;
+    
+    printf("%17s%18s\n", "near[j]", "cost[j,near[j]]");
+    for (i = 1; i <= n; i++) {
+        if (near[i] == 0)
+            printf("near[%d]       %-13d%s\n", i, near[i], "-");  
+        else if (cost[i][near[i]] == INT_MAX)  
+            printf("near[%d]       %-13d%s\n", i, near[i], "inf");  
+        else  
+            printf("near[%d]       %-13d%d\n", i, near[i], cost[i][near[i]]);
+    }
+    
+    printf("Mincost= %d\n", mincost);
+    
+    for (i = 2; i <= n - 1; i++) {
+        m = INT_MAX;
+        for (j = 1; j <= n; j++) {
+            if (near[j] != 0 && (cost[j][near[j]] < m || (cost[j][near[j]] == m && j < index))) {
+                index = j;
+                m = cost[j][near[j]];
             }
         }
-
-        if (x != -1 && y != -1) {
-            printf("\nIteration %d:\n", edge + 1);
-            printf("Selected Edge: (%d, %d) cost: %d\n", x, y, min);
-            mincost += min;
-            selected[y - 1] = 1;
-            edge++;
-            printVicinity(n, selected, costs);
+        
+        t[i - 1][0] = index;
+        t[i - 1][1] = near[index];
+        mincost += m;
+        near[index] = 0;
+        
+        for (k = 1; k <= n; k++) {
+            if (near[k] != 0 && cost[k][near[k]] > cost[k][index])
+                near[k] = index;
         }
+        
+        printf("\n%17s%18s\n", "near[j]", "cost[j,near[j]]");
+        for (int z = 1; z <= n; z++) {
+            if (near[z] == 0)
+                printf("near[%d]       %-13d%s\n", z, near[z], "-");
+            else if (cost[z][near[z]] == INT_MAX)
+                printf("near[%d]       %-13d%s\n", z, near[z], "inf");
+            else
+                printf("near[%d]       %-13d%d\n", z, near[z], cost[z][near[z]]);
+        }
+        printf("Mincost= %d\n", mincost);
     }
+    return mincost;
+}
 
-    printf("\nMinimum cost = %d\n", mincost);
+void create_graph() {
+    int origin, destin;
+    printf("Enter the number of vertices: ");
+    scanf("%d", &n);
+    max_edges = (n * (n - 1)) / 2;
+    
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++)
+            cost[i][j] = INT_MAX;
+    }
+    
+    printf("Enter the edge (-1 -1 to quit) and enter cost: ");
+    for (int i = 1; i <= max_edges; i++) {
+        scanf("%d%d", &origin, &destin);
+        if (origin == -1 && destin == -1)
+            break;
+        if (origin > n || destin > n || origin <= 0 || destin <= 0) {
+            printf("Invalid vertex!\n");
+            i--;
+            continue;
+        }
+        scanf("%d", &cost[origin][destin]);
+        cost[destin][origin] = cost[origin][destin];
+        count++;
+        E[i].ori = origin;
+        E[i].dest = destin;
+    }
 }
 
 int main() {
-    int n = 8;
-
-    struct Edge Edges[] = {
-        {1, 2, 1}, {1, 3, 2}, {2, 3, 1}, {2, 6, 1}, {2, 5, 2}, {2, 8, 3},
-        {3, 4, 3}, {3, 5, 2}, {3, 6, 2}, {4, 6, 2}, {5, 6, 3}, {5, 8, 1},
-        {6, 7, 1}, {7, 5, 2}, {8, 5, 1}
-    };
-
-    int numEdges = sizeof(Edges) / sizeof(Edges[0]);
-
-    Prim(Edges, numEdges, n);
-
+    int m;
+    struct timeval start, end;
+    long s, us;
+    double t_ms, t_us;
+    
+    create_graph();
+    gettimeofday(&start, NULL);
+    m = prims(E, cost, n, t);
+    gettimeofday(&end, NULL);
+    
+    s = end.tv_sec - start.tv_sec;
+    us = end.tv_usec - start.tv_usec;
+    t_us = s * 1000000 + us;
+    t_ms = t_us / 1000.0;
+    
+    printf("\n\nt   1   2\n");
+    for (int i = 0; i < n - 1; i++) {
+        printf("%-4d%-4d%d\n", i, t[i][0], t[i][1]);
+    }
+    printf("\nExecution time: %f milliseconds\n", t_ms);
+    
     return 0;
 }

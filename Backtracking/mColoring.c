@@ -1,57 +1,85 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#define MAX 100
+#define TRUE 1
+#define FALSE 0
+#define MAX 20
 
-int x[MAX], n,M;
-int m[MAX][MAX];
+int n, solutionCount = 0;
+int G[MAX][MAX], x[MAX];
 
-void NextValue(int k) {
-    while (1) {
-        x[k] = (x[k] + 1) % (M + 1);
-        if (x[k] == 0) return;
-        int j;
-        for (j = 0; j < n; j++)
-            if (x[k] == x[j] && m[k][j] == 1 && k != j) break;
-        if (j == n) return;
-    }
-}
-
-void mColoring(int k) {
-    while (1) {
-        NextValue(k);
-        if (x[k] == 0) return;
-        if (k == n - 1) {
-            
-            for (int i = 0; i < n; i++) {
-                printf("%2d ", x[i]);
-            }
-            printf("\n");
-        } else
-            mColoring(k + 1);
-    }
-}
+void nextValue(int k, int m);
+void graphColoring(int k, int m);
 
 int main() {
-    M=2;
-    clock_t start, end;
-    printf("Enter the number of vertices: ");
-    scanf("%d", &n);
-    printf("Enter the adjacency matrix:\n");
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            scanf("%d", &m[i][j]);
-    printf("\nSolution Vector:\n");
-    for(int i=0;i<n;i++)
-        printf("[%d]",i+1);
-    printf("\n");
-    for (int i = 0; i < n; i++)
-        x[i] = 0;
-    start = clock(); 
-    mColoring(0);
-    end = clock(); 
-    double time_taken = ((double)(end - start) / CLOCKS_PER_SEC) * 1000;
-    printf("Execution time: %.2f ms\n", time_taken);
+    int i, j, max = 0, m;
 
+    printf("\nEnter the number of vertices: ");
+    scanf("%d", &n);
+    for (i = 1; i <= n; i++)
+        x[i] = 0;
+    printf("Enter the adjacency matrix:\n");
+    m = 0;
+    for (i = 1; i <= n; i++) {
+        max = 0;
+        for (j = 1; j <= n; j++) {
+            scanf("%d", &G[i][j]);
+            if (G[i][j] == 1)
+                max++;
+        }
+        if (max > m)
+            m = max;
+    }
+   
+    for (i = 1; i <= m; i++) {
+        solutionCount = 0;
+        graphColoring(1, i);
+        if (solutionCount > 0) {
+            printf("Chromatic number: %d\n", i);
+            printf("Total solutions for chromatic number %d: %d\n", i, solutionCount);
+            break;
+        }
+        for (j = 1; j <= n; j++)
+            x[j] = 0;
+    }
     return 0;
 }
+
+void nextValue(int k, int m) {
+    int j;
+    do {
+        x[k] = (x[k] + 1) % (m + 1);
+        if (x[k] == 0) {
+            return;
+        }
+        for (j = 1; j <= n; j++) {
+            if (G[k][j] == 1 && x[k] == x[j]) {
+                break;
+            }
+        }
+        if (j == n + 1) {
+            break;
+        }
+    } while (TRUE);
+}
+
+
+void graphColoring(int k, int m) {
+    int checked = 0;
+    do {
+        nextValue(k, m);
+        if (x[k] == 0)
+            return;
+        if (k == n) {
+            if (!checked) {
+                ++solutionCount;
+                checked = 1;
+                printf("Solution vector: ");
+                for (int i = 1; i <= n; i++)
+                    printf("%d ", x[i]);
+                printf("\n");
+            }
+        }
+        else
+            graphColoring(k + 1, m);
+    } while (TRUE);
+}
+

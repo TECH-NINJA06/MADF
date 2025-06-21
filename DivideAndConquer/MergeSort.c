@@ -1,66 +1,69 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-
 #define MAX 100
-#define MAX_LEN 100
-
-void merge(char arr[][MAX_LEN], char temp[][MAX_LEN], int left, int mid, int right);
-void merge_sort(char arr[][MAX_LEN], char temp[][MAX_LEN], int left, int right);
-
-void merge_sort(char arr[][MAX_LEN], char temp[][MAX_LEN], int left, int right) {
-    if (left < right) {
-        int mid = (left + right) / 2;
-
-        merge_sort(arr, temp, left, mid);
-        merge_sort(arr, temp, mid + 1, right);
-
-        merge(arr, temp, left, mid, right);
-    }
-}
-
-void merge(char arr[][MAX_LEN], char temp[][MAX_LEN], int left, int mid, int right) {
-    int i = left, j = mid + 1, k = left;
-
-    while (i <= mid && j <= right) {
-        if (strcmp(arr[i], arr[j]) <= 0) {
-            strcpy(temp[k++], arr[i++]);
-        } else {
-            strcpy(temp[k++], arr[j++]);
+struct record
+{
+    int id;
+    char name[100];
+    int age;
+};
+struct record a[MAX], b[MAX];
+void Merge(int low, int mid, int high)
+{
+    int i = low, j = mid + 1, k = low;
+    while (i <= mid && j <= high)
+    {
+        if (a[i].id <= a[j].id)
+        {
+            b[k++] = a[i++];
+        }
+        else
+        {
+            b[k++] = a[j++];
         }
     }
-
-    while (i <= mid) {
-        strcpy(temp[k++], arr[i++]);
+    while (i <= mid)
+    {
+        b[k++] = a[i++];
     }
-    while (j <= right) {
-        strcpy(temp[k++], arr[j++]);
+    while (j <= high)
+    {
+        b[k++] = a[j++];
     }
-
-    for (i = left; i <= right; i++) {
-        strcpy(arr[i], temp[i]);
+    for (k = low; k <= high; k++)
+    {
+        a[k] = b[k];
     }
 }
-
-int main() {
-    char arr[MAX][MAX_LEN], temp[MAX][MAX_LEN];
-    int n;
-
-    printf("Enter number of strings: ");
+void MergeSort(int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        MergeSort(low, mid);
+        MergeSort(mid + 1, high);
+        Merge(low, mid, high);
+    }
+}
+int main()
+{
+    int i, n;
+    printf("\nEnter number of records: ");
     scanf("%d", &n);
-
-    printf("Enter strings: ");
-    for (int i = 0; i < n; i++) {
-        scanf("%s", arr[i]);
+    for (i = 0; i < n; i++)
+    {
+        printf("Enter id, age and name:\n");
+        scanf("%d %d", &a[i].id, &a[i].age);
+        getchar();
+        fgets(a[i].name, sizeof(a[i].name), stdin);
+        a[i].name[strcspn(a[i].name, "\n")] = 0;
     }
-
-    merge_sort(arr, temp, 0, n - 1);
-
-    printf("Sorted strings: ");
-    for (int i = 0; i < n; i++) {
-        printf("%s ", arr[i]);
+    MergeSort(0, n - 1);
+    printf("\nSorted Records by ID:\n");
+    printf("%s\t%15s\t%s\n", "ID", "NAME", "AGE");
+    for (i = 0; i < n; i++)
+    {
+        printf("%d\t%15s\t%d\n", a[i].id, a[i].name, a[i].age);
     }
-    printf("\n");
-
     return 0;
 }

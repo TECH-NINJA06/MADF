@@ -1,44 +1,57 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-int binarySearch(char *arr[], int l, int r, char *x) {
-    if (r >= l) {
-        int mid = l + (r - l) / 2;
-        if (strcmp(arr[mid], x) == 0)
+#define MAX 100
+
+void display(char a[][MAX], int n){
+    printf("\n");
+    for (int i = 0; i < n; i++) {
+        printf("[%d]       ", i + 1);
+    }
+    printf("\n");
+    for (int i = 0; i < n; i++) {
+        printf("%s     ", a[i]);
+    }
+    printf("\n");
+}
+int binarysearch(char a[][MAX], int low, int high, char *x) {
+    if (high >= low)
+    {
+        int mid = (low + high) / 2;
+        display(a, high + 1);
+        printf("\nlow: %d\t  mid: %d\t  high: %d\n\n", low + 1,
+               mid + 1, high + 1);
+        int cmp_result = strcmp(x, a[mid]);
+        if (cmp_result == 0)
             return mid;
-        if (strcmp(arr[mid], x) > 0)
-            return binarySearch(arr, l, mid - 1, x);
-        return binarySearch(arr, mid + 1, r, x);
+        else if (cmp_result < 0)
+            return binarysearch(a, low, mid - 1, x);
+        else
+            return binarysearch(a, mid + 1, high, x);
     }
     return -1;
 }
-
 int main() {
     int n;
-    printf("Enter number of elements: ");
+    char x[MAX];
+    printf("Enter number of strings: ");
     scanf("%d", &n);
-
-    char *arr[n];
-    char buffer[100];
-    for (int i = 0; i < n; i++) {
-        printf("Enter element %d: ", i + 1);
-        scanf("%s", buffer);
-        arr[i] = strdup(buffer);
+    char a[n][MAX];
+    printf("Enter the strings in sorted order:\n");
+    for (int i = 0; i < n; i++)
+    {
+        scanf("%s", a[i]);
     }
-
-    char x[100];
-    printf("Enter element to search: ");
+    printf("Enter the string to search: ");
     scanf("%s", x);
+    display(a, n);
 
-    int result = binarySearch(arr, 0, n - 1, x);
+    int result = binarysearch(a, 0, n - 1, x);
     if (result != -1)
-        printf("Element found at index %d\n", result);
+        printf("\nElement '%s' found at position %d\n", x, result + 1);
     else
-        printf("Element not found\n");
-
-    for (int i = 0; i < n; i++) {
-        free(arr[i]);
-    }
-
+        printf("\nElement '%s' not found\n", x);
+    printf("\nExecution time: %.6f ms\n", time_ms);
     return 0;
 }

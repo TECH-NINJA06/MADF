@@ -3,31 +3,27 @@
 
 int n, m;
 int w[100], x[100];
+int nodes = 1;
 
-void printTree(int spaces, int s, int k, int r) {
-    for (int i = 0; i < spaces; i++)
-        printf(" ");  // Indentation for tree structure
-    printf("[ %d | %d | %d ]\n", s, k, r);  // Print node
-}
-
-void SumOfSub(int s, int k, int r, int spaces) {
-    printTree(spaces, s, k, r);  // Print current node
-
-    if (k >= n)  // Base case: Stop if index exceeds
+void SumOfSub(int s, int k, int r) {
+    if (k >= n)
         return;
 
     x[k] = 1;
-    if (s + w[k] <= m) {  // Left branch (Include w[k])
-        for (int i = 0; i < spaces; i++) printf(" ");
-        printf("/\n");
-        SumOfSub(s + w[k], k + 1, r - w[k], spaces + 4);
+    if (s + w[k] + w[k + 1] <= m) {
+        SumOfSub(s + w[k], k + 1, r - w[k]);
     }
 
-    x[k] = 0;
-    if (s + r - w[k] >= m) {  // Right branch (Exclude w[k])
-        for (int i = 0; i < spaces; i++) printf(" ");
-        printf("\\\n");
-        SumOfSub(s, k + 1, r - w[k], spaces + 4);
+    if (s + r - w[k] >= m && s + w[k + 1] <= m) {
+        x[k] = 0;
+        SumOfSub(s, k + 1, r - w[k]);
+    }
+    if (s + w[k] == m) {
+        printf("Solution found: ");
+        for (int i = 0; i <= k; i++) {
+            printf("x%d = %d ", i + 1, x[i]);
+        }
+        printf("\n");
     }
 }
 
@@ -35,16 +31,15 @@ int main() {
     int r = 0;
     printf("Enter size of set: ");
     scanf("%d", &n);
+    printf("Enter sum: ");
+    scanf("%d", &m);
     printf("Enter elements of set: ");
     for (int i = 0; i < n; i++) {
         scanf("%d", &w[i]);
         r += w[i];
     }
-    printf("Enter sum: ");
-    scanf("%d", &m);
 
-    printf("\n Tree Structure:\n");
-    SumOfSub(0, 0, r, 0);  // Start from root
+    SumOfSub(0, 0, r);
 
     return 0;
 }
